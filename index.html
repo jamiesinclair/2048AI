@@ -16,12 +16,20 @@
 	#board2048 .square.val16 {background-color:red;}
 	#board2048 .square.val32 {background-color:blue;}
 	
+	#controls {position:absolute;right:0;top:0;}
 	
 	</style>
 </head>
 <body>
 	
+	<ul id="controls">
+		<li><a onclick="board.makeRandomSquare();">generate new square</a></li>
+		<li><a onclick="console.log(board.arr)">print board interals</a></li>
+		<li><a onclick="board.makeRandomSquare();">generate new square</a></li>
+	</ul>
+	
 	<script src="jquery-2.1.0.min.js" type="text/javascript"></script>
+	<script src="jquery.hotkeys.js" type="text/javascript"></script>
 	<script src="2048AI.js" type="text/javascript"></script>
 </body>
 </html>
