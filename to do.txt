@@ -1,8 +1,0 @@
-
-
-- randomnly place a square in an open space
-
-- swipe to move squares across the board
-
-- merge function that joins two squares of the same value when bumped by a swipe
-
