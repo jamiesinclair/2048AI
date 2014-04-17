@@ -8,23 +8,29 @@
 	#board2048 .block {float:left;background-color:#eee;border-radius:5%;}
 	
 	#board2048 .square {position:absolute;background-color:red;border-radius:5%;
-		color:#fff;text-align:center;font-size:20px;line-height:80px;}
+		color:#fff;text-align:center;font-size:24px;line-height:60px;}
 	
-	#board2048 .square.val2 {background-color:green;}
-	#board2048 .square.val4 {background-color:orange;}
-	#board2048 .square.val8 {background-color:yellow;}
-	#board2048 .square.val16 {background-color:red;}
-	#board2048 .square.val32 {background-color:blue;}
+	#board2048 .square.val2 {background-color:#015C65;}
+	#board2048 .square.val4 {background-color:#062270;}
+	#board2048 .square.val8 {background-color:#008110;}
+	#board2048 .square.val16 {background-color:#A64E00;}
+	#board2048 .square.val32 {background-color:#028E9B;}
+	#board2048 .square.val64 {background-color:#133CAC;}
+	#board2048 .square.val128 {background-color:#00C618;}
+	#board2048 .square.val256 {background-color:#FF7800;}
+	#board2048 .square.val512 {background-color:#5EC4CD;}
+	#board2048 .square.val1024 {background-color:#6D89D5;}
+	#board2048 .square.val2048 {background-color:#66E275;}
+	#board2048 .square.val4096 {background-color:#FFB573;}
 	
 	#controls {position:absolute;right:0;top:0;}
-	
 	</style>
 </head>
 <body>
 	
 	<ul id="controls">
 		<li><a onclick="board.makeRandomSquare();">generate new square</a></li>
-		<li><a onclick="console.log(board.arr)">print board interals</a></li>
+		<li><a onclick="board.dumpBoard();">print board interals</a></li>
 		<li><a onclick="board.makeRandomSquare();">generate new square</a></li>
 	</ul>
 	

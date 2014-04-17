@@ -8,12 +8,15 @@ var board = new function(size) {
 	// default board size
 	b.size = (typeof size=='undefined') ? 4 : size;
 	
-	
+	b.settings = {
+		delay:200,
+		newSquareValues:[2,2,2,4,4]
+	};
 	
 	
 	
 	var blockSize = 60;
-	var blockMargin = 5;
+	var blockMargin = 3;
 	b.generate = function() {
 		
 		// the visible board backdrop...
@@ -76,7 +79,7 @@ var board = new function(size) {
 		
 		
 		// internal...
-		var square = {value:value,html:htmlSquare};
+		var square = {value:value,html:htmlSquare,merge:0};
 		b.arr[x][y] = square;
 		
 		
@@ -84,11 +87,16 @@ var board = new function(size) {
 	
 	
 	b.makeRandomSquare = function(values) {
-		values = (typeof values=='undefined' || !$.isArray(values)) ? [2, 2,4] : values;
+		values = (typeof values=='undefined' || !$.isArray(values)) ? b.settings.newSquareValues : values;
 		
 		var finalVal = values[Math.floor(Math.random() * values.length)];
 		
 		var spaces = b.freeSpaces();
+		
+		if(!spaces.length) {
+			alert('game over!');
+			return;
+		}
 		
 		var finalSpace = spaces[Math.floor(Math.random() * spaces.length)];
 		
@@ -104,19 +112,83 @@ var board = new function(size) {
 		var squarePositionLeft = ((newX*blockSize)+blockMargin+((newX*2)*blockMargin))+'px';
 		var squarePositionTop = ((newY*blockSize)+blockMargin+((newY*2)*blockMargin))+'px';
 		
+		var square = b.arr[x][y];
 		
+		var callback = null;
+		// console.log(b.arr[x][y]);
+		if(square.merge && square.merge!==true) {
+			// console.log(square.merge);
+			callback = function() {
+				square.html.remove();
+				square.merge.html.remove();
+				b.placeSquare(newX,newY,square.value*2);
+			};
+		}
 		
 		// visible
-		var div = b.arr[x][y].html.animate({left:squarePositionLeft,top:squarePositionTop},1000);
+		var div = square.html.animate({left:squarePositionLeft,top:squarePositionTop},b.settings.delay,'swing',callback);
+		
 		
 		// internal
-		var temp = b.arr[x][y];
 		b.arr[x][y] = 0;
-		b.arr[newX][newY]=temp;
+		b.arr[newX][newY]=square;
 	};
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	b.dumpBoard = function() {
+		for(var i=0;i<b.arr.length;i++) {
+			console.log(b.arr[i]);
+		}
+	};
+	
+	
+	
+	
+	// generate the board and return...
+	b.generate();
+	
+	// b.makeRandomSquare();
+	// b.makeRandomSquare();
+	
+	// console.log(b);
+	b.placeSquare(1,0,4);
+	b.placeSquare(1,1,2);
+	b.placeSquare(1,2,2);
+	// b.placeSquare(1,3,4);
+	// b.placeSquare(0,1,2);
+	// b.placeSquare(2,2,2);
+	// b.placeSquare(0,0,32);
+	// b.placeSquare(0,3,4);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	b.swipe = function(direction) {
-		// console.log('swipe '+direction);
+		
+		var movementFlag = false;
+		
 		var x,y,dx,dy=0;
 		
 		// case, 'left'
@@ -125,15 +197,23 @@ var board = new function(size) {
 				for(y=0;y<b.size;y++) {
 					if(b.arr[x][y]!=0) {
 						for(dx=0,count=0;count<x;count++,dx--) {
-							// console.log((x+(dx-1)));
 							if(b.arr[(x+(dx-1))][y]==0) {
 								continue;
 							}else {
+								// merge check
+								if(b.arr[x][y].value==b.arr[(x+(dx-1))][y].value && !b.arr[(x+(dx-1))][y].merge) {
+									// merge...
+									b.arr[x][y].merge = b.arr[(x+(dx-1))][y];
+									b.arr[(x+(dx-1))][y].merge = true;
+									dx--;
+								}
 								break;
 							}
 						}
-						b.moveSquare(x,y,dx,0);
-						// console.log('move square at '+x+','+y+' by dx=='+dx);
+						if(dx!=0) {
+							movementFlag = true;
+							b.moveSquare(x,y,dx,0);
+						}
 					}
 				}
 			}
@@ -150,11 +230,20 @@ var board = new function(size) {
 							if(b.arr[(x+(dx+1))][y]==0) {
 								continue;
 							}else {
+								// merge check
+								if(b.arr[x][y].value==b.arr[(x+(dx+1))][y].value && !b.arr[(x+(dx+1))][y].merge) {
+									// merge...
+									b.arr[x][y].merge = b.arr[(x+(dx+1))][y];
+									b.arr[(x+(dx+1))][y].merge = true;
+									dx++;
+								}
 								break;
 							}
 						}
-						b.moveSquare(x,y,dx,0);
-						// console.log('move square at '+x+','+y+' by dx=='+dx);
+						if(dx!=0) {
+							movementFlag = true;
+							b.moveSquare(x,y,dx,0);
+						}
 					}
 				}
 			}
@@ -172,11 +261,21 @@ var board = new function(size) {
 							if(b.arr[x][(y+(dy-1))]==0) {
 								continue;
 							}else {
+								// merge check
+								if(b.arr[x][y].value==b.arr[x][(y+(dy-1))].value && !b.arr[x][(y+(dy-1))].merge) {
+									// merge...
+									
+									b.arr[x][y].merge = b.arr[x][(y+(dy-1))];
+									b.arr[x][(y+(dy-1))].merge=true;
+									dy--;
+								}
 								break;
 							}
 						}
-						b.moveSquare(x,y,0,dy);
-						// console.log('move square at '+x+','+y+' by dy=='+dy);
+						if(dy!==0) {
+							movementFlag = true;
+							b.moveSquare(x,y,0,dy);
+						}
 					}
 				}
 			}
@@ -194,29 +293,47 @@ var board = new function(size) {
 							if(b.arr[x][(y+(dy+1))]==0) {
 								continue;
 							}else {
+								// merge check
+								if(b.arr[x][y].value==b.arr[x][(y+(dy+1))].value && !b.arr[x][(y+(dy+1))].merge) {
+									// merge...
+									b.arr[x][y].merge = b.arr[x][(y+(dy+1))];
+									b.arr[x][(y+(dy+1))].merge=true;
+									dy++;
+								}
 								break;
 							}
 						}
-						b.moveSquare(x,y,0,dy);
-						// console.log('move square at '+x+','+y+' by dy=='+dy);
+						if(dy!==0) {
+							movementFlag = true;
+							b.moveSquare(x,y,0,dy);
+						}
 					}
 				}
 			}
 		}
 		
-	};
+		if(!movementFlag) {
+			// alert('you must swipe in a direction so that at least one square moves...');
+			return;
+		}
+		
+		window.setTimeout(function(){b.makeRandomSquare();},b.settings.delay+25);
+		
+	}; // eof swipe
+	
+	// setup swipe bindings...
 	$(window).bind('keyup','left',function(){b.swipe('left');});
 	$(window).bind('keyup','right',function(){b.swipe('right');});
 	$(window).bind('keyup','up',function(){b.swipe('up');});
 	$(window).bind('keyup','down',function(){b.swipe('down');});
 	
-	// generate the board and return...
-	b.generate();
 	
-	// console.log(b);
-	// b.placeSquare(1,1,2);
-	// b.placeSquare(0,0,32);
-	// b.placeSquare(0,3,4);
+	
+	
+	
+	
+	
+	
 	
 	// console.log(b.freeSpaces());
 	return b;
