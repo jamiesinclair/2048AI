@@ -29,13 +29,18 @@
 <body>
 	
 	<ul id="controls">
+		<li><a onclick="test.runTest();">Run Tests</a></li>
+		<li><a onclick="board.reset();">reset</a></li>
 		<li><a onclick="board.makeRandomSquare();">generate new square</a></li>
 		<li><a onclick="board.dumpBoard();">print board interals</a></li>
-		<li><a onclick="board.makeRandomSquare();">generate new square</a></li>
+		<li><a onclick="bot.start();">start bot...</a></li>
+		<li><a onclick="bot.stop();">stop bot...</a></li>
 	</ul>
 	
 	<script src="jquery-2.1.0.min.js" type="text/javascript"></script>
 	<script src="jquery.hotkeys.js" type="text/javascript"></script>
 	<script src="2048AI.js" type="text/javascript"></script>
+	<script src="bot.js" type="text/javascript"></script>
+	<script src="test.js" type="text/javascript"></script>
 </body>
 </html>

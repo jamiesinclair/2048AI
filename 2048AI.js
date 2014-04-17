@@ -47,6 +47,11 @@ var board = new function(size) {
 			}
 		}
 		
+		
+		// two initial squares
+		b.makeRandomSquare();
+		b.makeRandomSquare();
+		
 	};
 	
 	
@@ -94,8 +99,8 @@ var board = new function(size) {
 		var spaces = b.freeSpaces();
 		
 		if(!spaces.length) {
-			alert('game over!');
-			return;
+			// alert('game over!');
+			return false;
 		}
 		
 		var finalSpace = spaces[Math.floor(Math.random() * spaces.length)];
@@ -154,24 +159,37 @@ var board = new function(size) {
 	// generate the board and return...
 	b.generate();
 	
-	// b.makeRandomSquare();
-	// b.makeRandomSquare();
 	
 	// console.log(b);
-	b.placeSquare(1,0,4);
-	b.placeSquare(1,1,2);
-	b.placeSquare(1,2,2);
+	// b.placeSquare(1,0,4);
+	// b.placeSquare(1,1,2);
+	// b.placeSquare(1,2,2);
 	// b.placeSquare(1,3,4);
-	// b.placeSquare(0,1,2);
-	// b.placeSquare(2,2,2);
-	// b.placeSquare(0,0,32);
-	// b.placeSquare(0,3,4);
 	
 	
 	
 	
+	b.score = function() {
+		var total = 0;
+		var highest = 0;
+		for(var x=0;x<board.size;x++) {
+			for(var y=0;y<board.size;y++) {
+				if(typeof b.arr[x][y] != 'object') {continue;}
+				
+				total += b.arr[x][y].value;
+				if(b.arr[x][y].value>highest) {
+					highest = b.arr[x][y].value;
+				}
+			}
+		}
+		
+		return {total:total,highest:highest};
+	};
 	
-	
+	b.reset = function() {
+		b.htmlBoard.remove();
+		b.generate();
+	};
 	
 	
 	
@@ -186,6 +204,12 @@ var board = new function(size) {
 	
 	
 	b.swipe = function(direction) {
+		
+		var freeSpace = b.freeSpaces();
+		if(!freeSpace.length) {
+			console.log('game over');
+			return -3;
+		}
 		
 		var movementFlag = false;
 		
@@ -314,11 +338,12 @@ var board = new function(size) {
 		
 		if(!movementFlag) {
 			// alert('you must swipe in a direction so that at least one square moves...');
-			return;
+			return -2;
 		}
 		
 		window.setTimeout(function(){b.makeRandomSquare();},b.settings.delay+25);
 		
+		return true;
 	}; // eof swipe
 	
 	// setup swipe bindings...
