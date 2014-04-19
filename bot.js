@@ -3,11 +3,14 @@ var bot = new function() {
 	var bot = {};
 	
 	bot.settings = {
-		moveSpeed:50,
-		gameAnimationSpeed:20
+		botDelay:300,
+		animationSpeed:250
 	};
 	
-	board.settings.delay = bot.settings.gameAnimationSpeed;
+	board.settings.delay = bot.settings.animationSpeed;
+	$(window).trigger('botDelay',bot.settings.botDelay);
+	$(window).trigger('animationSpeed',bot.settings.animationSpeed);
+	
 	
 	var directions = ['left','right','up','down'];
 	
@@ -39,7 +42,7 @@ var bot = new function() {
 		}
 		
 		// randomly move...
-		window.setTimeout(loop,bot.settings.moveSpeed);
+		window.setTimeout(loop,bot.settings.botDelay);
 	};
 
 	bot.start = function() {

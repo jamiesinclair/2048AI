@@ -1,4 +1,29 @@
-
+var controls = new function() {
+	
+	var check = function() {
+		if(bot.settings.botDelay<(board.settings.animationSpeed+50)) {
+			bot.settings.botDelay=Number(board.settings.animationSpeed+50);
+			$(window).trigger('botDelay',bot.settings.botDelay);
+		}
+	};
+	
+	$('#animationSpeed').on('blur',function() {
+		var animationSpeed = $(this).val();
+		board.settings.animationSpeed = Number(animationSpeed);
+		check();
+		return true;
+	});
+	
+	$('#botDelay').on('blur',function() {
+		var botDelay = $(this).val();
+		bot.settings.botDelay = Number(botDelay);
+		check();
+		return true;
+	});
+	
+	$(window).on('botDelay',function(e,val) {$('#botDelay').val(val);})
+	$(window).on('animationSpeed',function(e,val) {$('#animationSpeed').val(val);})
+};
 
 
 var board = new function(size) {
@@ -9,9 +34,11 @@ var board = new function(size) {
 	b.size = (typeof size=='undefined') ? 4 : size;
 	
 	b.settings = {
-		delay:200,
+		animationSpeed:200,
 		newSquareValues:[2,2,2,4,4]
 	};
+	
+	$(window).trigger('animationSpeed',b.settings.animationSpeed);
 	
 	
 	
@@ -99,7 +126,6 @@ var board = new function(size) {
 		var spaces = b.freeSpaces();
 		
 		if(!spaces.length) {
-			// alert('game over!');
 			return false;
 		}
 		
@@ -131,7 +157,7 @@ var board = new function(size) {
 		}
 		
 		// visible
-		var div = square.html.animate({left:squarePositionLeft,top:squarePositionTop},b.settings.delay,'swing',callback);
+		var div = square.html.animate({left:squarePositionLeft,top:squarePositionTop},b.settings.animationSpeed,'swing',callback);
 		
 		
 		// internal
@@ -204,12 +230,6 @@ var board = new function(size) {
 	
 	
 	b.swipe = function(direction) {
-		
-		var freeSpace = b.freeSpaces();
-		if(!freeSpace.length) {
-			console.log('game over');
-			return -3;
-		}
 		
 		var movementFlag = false;
 		
@@ -337,11 +357,17 @@ var board = new function(size) {
 		}
 		
 		if(!movementFlag) {
+			var freeSpace = b.freeSpaces();
+			if(!freeSpace.length) {
+				console.log('game might be over...');
+				// return -3;
+			}
+			
 			// alert('you must swipe in a direction so that at least one square moves...');
 			return -2;
 		}
 		
-		window.setTimeout(function(){b.makeRandomSquare();},b.settings.delay+25);
+		window.setTimeout(function(){b.makeRandomSquare();},b.settings.animationSpeed+25);
 		
 		return true;
 	}; // eof swipe
